@@ -91,6 +91,5 @@ jobs:
             echo "No new changes to include in the changelog."
           fi
           # Push the changelog
-          git push origin HEAD
           git push origin release-${{ env.new_tag }}
 
