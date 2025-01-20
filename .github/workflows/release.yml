@@ -74,7 +74,7 @@ jobs:
           # Display the generated changelog
           cat CHANGELOG.md
 
-      - name: Commit and push changelog
+      - name: Create release branch and push changelog
         run: |
           # Configure git user
           git config --global --add safe.directory ${{github.workspace}}
@@ -82,6 +82,7 @@ jobs:
           git config --global user.name "oss-release-bot"
           git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
           git config pull.rebase false
+          git checkout -b release-${{ env.new_tag }}
           # Add and commit the changelog
           git add CHANGELOG.md
           if [ -s changelog_temp ]; then
@@ -91,11 +92,5 @@ jobs:
           fi
           # Push the changelog
           git push origin HEAD
+          git push origin release-${{ env.new_tag }}
 
-      - name: Create and push new tag
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          new_tag=${{ env.new_tag }}
-          git tag $new_tag
-          git push origin $new_tag
