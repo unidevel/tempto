@@ -1,10 +1,10 @@
-name: Increment Version Tag
+name: Create tempto release branch
 
 on:
   workflow_dispatch: # Allows manual triggering of the workflow
 
 jobs:
-  build-and-tag:
+  build-and-branch-out:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: true
@@ -37,11 +37,11 @@ jobs:
           echo "skipSigning=false" >> gradle.properties
 
       # Step to run Gradle build
-      - name: Gradle Build
+      - name: Test Gradle Build
         run: ./gradlew build
 
       # Step to get the latest tag
-      - name: Get latest tag
+      - name: Get latest release tag
         id: get_latest_tag
         run: |
           # Get the latest tag
@@ -49,8 +49,8 @@ jobs:
           echo "Latest tag: $latest_tag"
           echo "latest_tag=$latest_tag" >> $GITHUB_ENV
 
-      - name: Increment version
-        id: increment_version          
+      - name: Advance release version
+        id: advance_version          
         run: |
           latest_tag=${{ env.latest_tag }}
           # Parse the version number (e.g., 1.52)
@@ -74,7 +74,7 @@ jobs:
           # Display the generated changelog
           cat CHANGELOG.md
 
-      - name: Create release branch and push changelog
+      - name: Create release branch
         run: |
           # Configure git user
           git config --global --add safe.directory ${{github.workspace}}
@@ -83,6 +83,9 @@ jobs:
           git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
           git config pull.rebase false
           git checkout -b release-${{ env.new_tag }}
+
+      - name: Push changelog to release branch
+        run: |
           # Add and commit the changelog
           git add CHANGELOG.md
           if [ -s changelog_temp ]; then
