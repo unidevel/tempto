@@ -200,7 +200,7 @@ configure(subprojects - expected_result_generator - tempto_examples) {
 
         repositories {
             maven {
-                url = uri('https://oss.sonatype.org/service/local/staging/deploy/maven2/')
+                url = uri('https://ossrh-staging-api.central.sonatype.com/service/local/staging/deploy/maven2/')
                 credentials {
                     username = System.getenv('NEXUS_USERNAME')
                     password = System.getenv('NEXUS_PASSWORD')
